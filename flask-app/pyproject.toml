@@ -9,4 +9,5 @@ dependencies = [
     "flask>=3.1.1",
     "python-dotenv>=1.1.1",
     "requests>=2.32.4",
+    "python-keycloak>=4.0.0",
 ]
