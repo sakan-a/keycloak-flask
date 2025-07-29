@@ -1,13 +1,38 @@
 import os
-from flask import Flask, redirect, url_for, session, render_template_string, jsonify
+from flask import Flask, redirect, url_for, session, render_template_string, jsonify, abort
+from functools import wraps
 from authlib.integrations.flask_client import OAuth
 from dotenv import load_dotenv
-import requests
 from keycloak import KeycloakAdmin
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if "user" not in session:
+            return redirect(url_for("index"))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def require_role(role_name):
+    def decorator(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            user = session.get("user", {})
+            roles = user.get("realm_access", {}).get("roles", [])
+            if role_name not in roles:
+                abort(403)
+            return f(*args, **kwargs)
+        return wrapper
+    return decorator
 
 load_dotenv()
 
 app = Flask(__name__)
+app.config.update(
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SECURE=True,      # True in production (HTTPS only)
+    SESSION_COOKIE_SAMESITE="Lax"
+)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
 oauth = OAuth(app)
@@ -112,6 +137,8 @@ def logout():
 
 
 @app.route("/users")
+@login_required
+@require_role("admin")
 def get_users():
     try:
         # Requires a client with "Service Account" enabled
@@ -124,4 +151,4 @@ def get_users():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=5000, debug=True)
