@@ -2,7 +2,7 @@
 {% block title %}Home - Silver Circle{% endblock %}
 
 {% block styles %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/messages.css') }}">
 {% endblock %}
 
 {% block navbar %}
@@ -49,8 +49,8 @@
         </a>
         <hr>
         <ul class="nav nav-pills flex-column mb-auto">
-            <li class="nav-item"> <a href="/home" class="nav-link active" aria-current="page"> <svg class="bi pe-none me-2"
-                        width="16" height="16" aria-hidden="true">
+            <li> <a href="/home" class="nav-link link-body-emphasis"> <svg class="bi pe-none me-2" width="16" height="16"
+                        aria-hidden="true">
                         <use xlink:href="#house-fill"></use>
                     </svg>
                     Home
@@ -67,8 +67,8 @@
                     </svg>
                     Matchmaking
                 </a> </li>
-            <li> <a href="/messages" class="nav-link link-body-emphasis"> <svg class="bi pe-none me-2" width="16" height="16"
-                        aria-hidden="true">
+            <li class="nav-item"> <a href="/messages" class="nav-link active" aria-current="page"> <svg class="bi pe-none me-2"
+                        width="16" height="16" aria-hidden="true">
                         <use xlink:href="#chat-fill"></use>
                     </svg>
                     Messages
@@ -97,23 +97,20 @@
         </div>
     </div>
     <div class="main me-auto">
-        <div class="post">
-            <div class="d-flex">
-                <div class="profile-img me-3"></div>
-                <div class="flex-grow-1">
-                    <div class="d-flex align-items-center">
-                        <span class="username">User</span>
-                        <i class="fas fa-check-circle verified"></i>
-                        <span class="handle ms-2">@user</span>
-                        <span class="text-muted-custom ms-2">·</span>
-                        <span class="text-muted-custom ms-2">0h</span>
-                    </div>
-                    <div class="post-content">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt reprehenderit cumque soluta rerum possimus est id provident, fugiat cupiditate optio, doloribus itaque dolores. Consequatur magni corporis vitae repellendus deserunt quod?
-                    </div>
-                </div>
-            </div>
-        </div>
+        <h2>Messages</h2>
+        <input type="text" id="search-box" placeholder="Search for users..." autocomplete="off">
+        <ul id="search-results"></ul>
+        <ul>
+        {% for u in users %}
+            <li><a href="{{ url_for('dm.dm', recipient=u.username) }}">{{ u.username }}</a></li>
+        {% else %}
+            <li>No existing chats.</li>
+        {% endfor %}
+        </ul>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/messages.js') }}"></script>
 {% endblock %}

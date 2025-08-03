@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Sign Up - Silver Circle{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
+{% endblock %}
+
+{% block navbar %}
+{% endblock %}
+
+{% block content %}
+<body class="d-flex align-items-center py-4 bg-body-tertiary">
+    <main class="form-signin w-100 m-auto">
+        <form>
+            <h1 class="h3 mb-3 fw-normal">Sign Up</h1>
+            <div class="form-floating">
+                <input type="tel" class="form-control" id="floatingPhone" placeholder="91234567""
+                    required>
+                <label for="floatingPhone">Phone Number</label>
+            </div>
+            <div class="form-floating">
+                <input type="text" class="form-control" id="floatingPin" placeholder="123456"
+                    pattern="\d{6}" maxlength="6" inputmode="numeric" required>
+                <label for="floatingPin">PIN</label>
+            </div>
+            <p>Already have an account? <a href="/login">Log In</a></p>
+            <button class="btn btn-primary w-100 py-2" type="submit">Submit</button>
+        </form>
+    </main>
+</body>
+{% endblock %}

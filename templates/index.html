@@ -5,6 +5,10 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
 {% endblock %}
 
+{% block navbar %}
+    {% include "includes/navbar.html" %}
+{% endblock %}
+
 {% block content %}
 <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
     <symbol id="bootstrap" viewBox="0 0 118 94">

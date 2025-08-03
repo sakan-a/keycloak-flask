@@ -1,8 +1,66 @@
+<!-- <!DOCTYPE html>
+<html>
+<head>
+    <title>Chat with {{ recipient }}</title>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+    <h2>Chat between {{ user }} and {{ recipient }}</h2>
+    
+    <form id="chat-form">
+        <input id="message-input" name="message" placeholder="Type a message..." autocomplete="off" required style="width:300px;">
+        <button type="submit">Send</button>
+    </form>
+    
+    <div id="chat-box" style="margin-top:20px;">
+        {% for msg in messages %}
+            <p><strong>{{ msg.sender }}:</strong> {{ msg.text }}</p>
+        {% else %}
+            <p>No messages yet.</p>
+        {% endfor %}
+    </div>
+    
+    <br>
+    <a href="{{ url_for('messages.messages') }}">Back to users</a> |
+    <a href="{{ url_for('login.logout') }}">Logout</a>
+
+    <script>
+        const socket = io();
+        const recipient = "{{ recipient }}";
+        const currentUser = "{{ user }}";
+
+        socket.emit('join', { recipient });
+
+        const form = document.getElementById('chat-form');
+        const input = document.getElementById('message-input');
+        const chatBox = document.getElementById('chat-box');
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const message = input.value.trim();
+            if (message) {
+                socket.emit('send_message', {
+                    recipient: recipient,
+                    message: message
+                });
+                input.value = '';
+            }
+        });
+
+        socket.on('receive_message', function (data) {
+            const p = document.createElement('p');
+            p.innerHTML = `<strong>${data.sender}:</strong> ${data.message}`;
+            chatBox.appendChild(p);
+        });
+    </script>
+</body>
+</html> -->
+
 {% extends "base.html" %}
 {% block title %}Home - Silver Circle{% endblock %}
 
 {% block styles %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/messages.css') }}">
 {% endblock %}
 
 {% block navbar %}
@@ -49,8 +107,8 @@
         </a>
         <hr>
         <ul class="nav nav-pills flex-column mb-auto">
-            <li class="nav-item"> <a href="/home" class="nav-link active" aria-current="page"> <svg class="bi pe-none me-2"
-                        width="16" height="16" aria-hidden="true">
+            <li> <a href="/home" class="nav-link link-body-emphasis"> <svg class="bi pe-none me-2" width="16" height="16"
+                        aria-hidden="true">
                         <use xlink:href="#house-fill"></use>
                     </svg>
                     Home
@@ -67,8 +125,8 @@
                     </svg>
                     Matchmaking
                 </a> </li>
-            <li> <a href="/messages" class="nav-link link-body-emphasis"> <svg class="bi pe-none me-2" width="16" height="16"
-                        aria-hidden="true">
+            <li class="nav-item"> <a href="/messages" class="nav-link active" aria-current="page"> <svg class="bi pe-none me-2"
+                        width="16" height="16" aria-hidden="true">
                         <use xlink:href="#chat-fill"></use>
                     </svg>
                     Messages
@@ -97,23 +155,32 @@
         </div>
     </div>
     <div class="main me-auto">
-        <div class="post">
-            <div class="d-flex">
-                <div class="profile-img me-3"></div>
-                <div class="flex-grow-1">
-                    <div class="d-flex align-items-center">
-                        <span class="username">User</span>
-                        <i class="fas fa-check-circle verified"></i>
-                        <span class="handle ms-2">@user</span>
-                        <span class="text-muted-custom ms-2">·</span>
-                        <span class="text-muted-custom ms-2">0h</span>
-                    </div>
-                    <div class="post-content">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt reprehenderit cumque soluta rerum possimus est id provident, fugiat cupiditate optio, doloribus itaque dolores. Consequatur magni corporis vitae repellendus deserunt quod?
-                    </div>
-                </div>
-            </div>
+        <h2>Chat between {{ user }} and {{ recipient }}</h2>
+        
+        <form id="chat-form">
+            <input id="message-input" name="message" placeholder="Type a message..." autocomplete="off" required style="width:300px;">
+            <button type="submit">Send</button>
+        </form>
+        
+        <div id="chat-box" style="margin-top:20px;">
+            {% for msg in messages %}
+                <p><strong>{{ msg.sender }}:</strong> {{ msg.text }}</p>
+            {% else %}
+                <p>No messages yet.</p>
+            {% endfor %}
         </div>
+        
+        <br>
+        <a href="{{ url_for('messages.messages') }}">Back to users</a>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        window.recipient =  "{{ recipient }}";
+        window.currentUser = "{{ user }}";
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.8.1/socket.io.js" integrity="sha512-8BHxHDLsOHx+flIrQ0DrZcea7MkHqRU5GbTHmbdzMRnAaoCIkZ97PqZcXJkKZckMMhqfoeaJE+DNUVuyoQsO3Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="{{ url_for('static', filename='js/dm.js') }}"></script>
 {% endblock %}
