@@ -1,9 +1,23 @@
 import os
 from flask import Flask, redirect, url_for, session, render_template_string, jsonify, abort
+from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 from functools import wraps
 from authlib.integrations.flask_client import OAuth
 from dotenv import load_dotenv
 from keycloak import KeycloakAdmin
+
+db = SQLAlchemy(app)  
+
+class User(db.Model):
+    __tablename__ = 'users'
+
+    id = db.Column(db.String(36), primary_key=True)  # Keycloak User ID (UUID)
+    email = db.Column(db.String(255), unique=True)
+    username = db.Column(db.String(255))
+    full_name = db.Column(db.String(255))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 def login_required(f):
     @wraps(f)
@@ -111,9 +125,42 @@ def login():
 @app.route("/auth")
 def auth():
     print("At callback, session contains:", dict(session))
+
     token = oauth.keycloak.authorize_access_token()
+    user_info = oauth.keycloak.parse_id_token(token)
+
+    keycloak_id = user_info.get('sub')
+    email = user_info.get('email')
+    name = user_info.get('name')
+    preferred_username = user_info.get('preferred_username')
+
+    # Sync with local DB
+    user = User.query.get(keycloak_id)
+    if user is None:
+        user = User(
+            id=keycloak_id,
+            email=email,
+            username=preferred_username,
+            full_name=name
+        )
+        db.session.add(user)
+    else:
+        user.email = email
+        user.username = preferred_username
+        user.full_name = name
+
+    db.session.commit()
+
+    # Save minimal info in session
     session["id_token"] = token["id_token"]
-    session["user"] = oauth.keycloak.userinfo(token=token)
+    session["user"] = {
+        "id": keycloak_id,
+        "email": email,
+        "name": name,
+        "realm_access": user_info.get("realm_access", {}),
+        "sub": keycloak_id,
+    }
+
     return redirect("/")
 
 # Logout
@@ -149,6 +196,8 @@ def get_users():
         print(f"Error fetching users from Keycloak: {e}")
         return jsonify({"error": "Failed to fetch users", "details": str(e)}), 500
 
+with app.app_context():
+    db.create_all()
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
