@@ -76,6 +76,7 @@ def index():
             <form action="{{ url_for('logout') }}" method="post" style="display:inline;">
                 <button type="submit">Logout</button>
             </form>
+            <!-- 
             <button id="get-users-btn">Get Users</button>
             <script>
                 document.getElementById('get-users-btn').addEventListener('click', function() {
@@ -91,6 +92,7 @@ def index():
                         });
                 });
             </script>
+            -->
         ''', user=user)
     else:
         return render_template_string('''
