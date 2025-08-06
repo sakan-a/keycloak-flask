@@ -69,8 +69,45 @@ keycloak_admin = KeycloakAdmin(
 @app.route("/")
 def index():
     user = session.get("user")
+    navbar_html = '''
+    <div class="container">
+        <header
+            class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+            <div class="col-md-3 mb-2 mb-md-0">
+                <a href="/" class="d-inline-flex link-body-emphasis text-decoration-none">
+                    <span class="fs-4">Silver Circle</span>
+                </a>
+            </div>
+            <ul class="nav nav-pills col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+                <li class="nav-item"><a href="#" class="nav-link active" aria-current="page">Home</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">About Us</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">Contact</a></li>
+            </ul>
+            <div class="col-md-3 text-end">
+                <a href="/login" class="btn btn-outline-primary me-2">Login</a>
+                <a href="/register" class="btn btn-primary">Sign Up</a>
+            </div>
+        </header>
+    </div>
+    '''
     if user:
         return render_template_string('''
+            <div class="container">
+        <header
+            class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+            <div class="col-md-3 mb-2 mb-md-0">
+                <a href="/" class="d-inline-flex link-body-emphasis text-decoration-none">
+                    <span class="fs-4">Silver Circle</span>
+                </a>
+            </div>
+            <ul class="nav nav-pills col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+                <li class="nav-item"><a href="#" class="nav-link active" aria-current="page">Home</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">About Us</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">Contact</a></li>
+            </ul>
+        </header>
+    </div>                          
+
             <h1>Welcome, {{ user['name'] }}, {{ user['sub'] }}!</h1>
             <h2>All data: {{ user }}</h2>
             <form action="{{ url_for('logout') }}" method="post" style="display:inline;">
@@ -96,6 +133,27 @@ def index():
         ''', user=user)
     else:
         return render_template_string('''
+            <div class="container">
+        <header
+            class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+            <div class="col-md-3 mb-2 mb-md-0">
+                <a href="/" class="d-inline-flex link-body-emphasis text-decoration-none">
+                    <span class="fs-4">Silver Circle</span>
+                </a>
+            </div>
+            <ul class="nav nav-pills col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+                <li class="nav-item"><a href="#" class="nav-link active" aria-current="page">Home</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">About Us</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">Contact</a></li>
+            </ul>
+            <div class="col-md-3 text-end">
+                <form action="{{ url_for('login') }}" method="post">
+                    <button type="submit">Login</button>
+                </form>
+            </div>
+        </header>
+    </div>                          
+
             <h1>Hello, you are not logged in.</h1>
             <form action="{{ url_for('login') }}" method="post">
                 <button type="submit">Login</button>
