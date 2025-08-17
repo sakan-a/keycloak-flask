@@ -33,4 +33,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
 
 # Run the application
 # Note: Render provides PORT environment variable, but we'll default to 5000
-CMD ["python", "-m", "flask", "run", "--host=0.0.0.0", "--port=${PORT:-5000}"]
+CMD ["python", "app.py"]
